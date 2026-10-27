@@ -1,0 +1,16 @@
+<a class="skip" href="#contenido">Saltar al contenido</a>
+<header>
+  <a class="brand" routerLink="/inicio">PolyForge</a>
+  <nav aria-label="Principal">
+    <a routerLink="/inicio" routerLinkActive="active" ariaCurrentWhenActive="page">Inicio</a>
+    <a routerLink="/login" routerLinkActive="active" ariaCurrentWhenActive="page">Login</a>
+  </nav>
+  <button (click)="toggleTheme()" [attr.aria-pressed]="light()">
+    {{ light() ? 'Modo oscuro' : 'Modo claro' }}
+  </button>
+</header>
+@if (!online()) {
+  <p class="connection" role="alert">Sin conexión. Algunas páginas pueden no estar disponibles.</p>
+}
+<main id="contenido" tabindex="-1"><router-outlet /></main>
+<footer>PolyForge · Inicio y navegación</footer>
