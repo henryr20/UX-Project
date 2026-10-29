@@ -1,16 +1,77 @@
 <a class="skip" href="#contenido">Saltar al contenido</a>
-<header>
-  <a class="brand" routerLink="/inicio">PolyForge</a>
-  <nav aria-label="Principal">
-    <a routerLink="/inicio" routerLinkActive="active" ariaCurrentWhenActive="page">Inicio</a>
-    <a routerLink="/login" routerLinkActive="active" ariaCurrentWhenActive="page">Login</a>
-  </nav>
-  <button (click)="toggleTheme()" [attr.aria-pressed]="light()">
-    {{ light() ? 'Modo oscuro' : 'Modo claro' }}
+<header class="site-header" (keydown.escape)="closeMenu(true)">
+  <a class="brand" routerLink="/inicio" (click)="closeMenu()"
+    ><img src="images/logo.png" width="36" height="42" alt="" />PolyForge</a
+  >
+  <button
+    id="navigation-toggle"
+    class="menu-toggle"
+    type="button"
+    aria-controls="main-navigation"
+    [attr.aria-expanded]="menuOpen()"
+    [attr.aria-label]="menuOpen() ? 'Cerrar menú de navegación' : 'Abrir menú de navegación'"
+    (click)="menuOpen.set(!menuOpen())"
+  >
+    <pf-icon [name]="menuOpen() ? 'close' : 'menu'" />
   </button>
+  <nav
+    id="main-navigation"
+    class="header-navigation"
+    [class.is-open]="menuOpen()"
+    aria-label="Principal"
+  >
+    <a
+      routerLink="/inicio"
+      routerLinkActive="active"
+      ariaCurrentWhenActive="page"
+      (click)="navigateFromMenu()"
+      >Inicio</a
+    >
+    <a
+      routerLink="/ayuda"
+      routerLinkActive="active"
+      ariaCurrentWhenActive="page"
+      (click)="navigateFromMenu()"
+      >Ayuda</a
+    >
+    <a
+      routerLink="/login"
+      routerLinkActive="active"
+      ariaCurrentWhenActive="page"
+      (click)="navigateFromMenu()"
+      >Acceder</a
+    >
+    <button
+      class="theme-toggle"
+      type="button"
+      (click)="toggleTheme()"
+      [attr.aria-label]="light() ? 'Activar modo oscuro' : 'Activar modo claro'"
+      [attr.title]="light() ? 'Activar modo oscuro' : 'Activar modo claro'"
+    >
+      <pf-icon [name]="light() ? 'moon' : 'sun'" /><span class="theme-label">{{
+        light() ? 'Modo oscuro' : 'Modo claro'
+      }}</span>
+    </button>
+  </nav>
 </header>
 @if (!online()) {
   <p class="connection" role="alert">Sin conexión. Algunas páginas pueden no estar disponibles.</p>
 }
 <main id="contenido" tabindex="-1"><router-outlet /></main>
-<footer>PolyForge · Inicio y navegación</footer>
+<footer>
+  <div class="footer-top">
+    <div>
+      <a class="brand" routerLink="/inicio"
+        ><img src="images/logo.png" width="30" height="35" alt="" />PolyForge</a
+      >
+      <p>Da forma a tus ideas. Aprende a crear en 3D.</p>
+    </div>
+    <nav aria-label="Enlaces del pie de página">
+      <a routerLink="/inicio">Inicio</a><a routerLink="/ayuda">Preguntas frecuentes</a
+      ><a routerLink="/login">Acceder</a>
+    </nav>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 PolyForge</span><span>Modelado · Texturas · Iluminación</span>
+  </div>
+</footer>

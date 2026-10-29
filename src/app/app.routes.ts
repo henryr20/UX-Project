@@ -11,5 +11,14 @@ export const routes: Routes = [
     title: 'Login · PolyForge',
     loadComponent: () => import('./pages/login').then((m) => m.Login),
   },
-  { path: '**', redirectTo: 'inicio' },
+  {
+    path: 'ayuda',
+    title: 'Ayuda · PolyForge',
+    loadComponent: () => import('./pages/help').then((m) => m.Help),
+  },
+  {
+    path: '**',
+    title: 'Página no encontrada · PolyForge',
+    loadComponent: () => import('./pages/not-found').then((m) => m.NotFound),
+  },
 ];
