@@ -192,9 +192,7 @@ progress::-webkit-progress-value {
 progress::-moz-progress-bar {
   background: var(--orange);
 }
-.login {
-  max-width: 600px;
-}
+
 .login > .panel {
   margin-top: 24px;
 }
@@ -410,7 +408,9 @@ form > button {
   margin-top: 28px;
 }
 .login {
+  width: 100%;
   max-width: 480px;
+  padding: 40px 24px;
 }
 .login-heading {
   text-align: center;
@@ -452,13 +452,15 @@ form > button {
 }
 .otp-row {
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-columns: repeat(6, minmax(0, 44px));
+  justify-content: center;
   gap: 8px;
   margin: 18px 0;
 }
 .otp-digit {
   min-width: 0;
-  height: 54px;
+  height: auto;
+  aspect-ratio: 4 / 5;
   padding: 4px;
   border-radius: 24px;
   text-align: center;
@@ -522,7 +524,6 @@ form > button {
     gap: 5px;
   }
   .otp-digit {
-    height: 46px;
     font-size: 20px;
   }
 }
@@ -728,5 +729,15 @@ form > button {
   }
 }
 
-.success { color: #7ee2a8; }
-:root[data-theme='light'] .success { color: #18743d; }
+.success {
+  color: #7ee2a8;
+}
+:root[data-theme='light'] .success {
+  color: #18743d;
+}
+
+@media (max-width: 550px) {
+  .login {
+    padding: 28px 20px;
+  }
+}
