@@ -16,3 +16,18 @@ interface Consultas extends JpaRepository<Soporte,Long> {
     Optional<Soporte> findByIdAndUsuarioId(Long id, Long usuarioId);
     void deleteByUsuarioId(Long id);
 }
+interface Posts extends JpaRepository<PostComunidad,Long> {
+    List<PostComunidad> findAllByOrderByIdDesc();
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("select p from PostComunidad p where p.id = ?1")
+    Optional<PostComunidad> buscarParaEditar(Long id);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("""
+        select p from PostComunidad p
+        where p.autor = ?1 or ?1 member of p.likes or ?1 member of p.guardados
+        order by p.id
+        """)
+    List<PostComunidad> relacionadosCon(Usuario usuario);
+}

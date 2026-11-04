@@ -21,15 +21,17 @@ class Api {
     private final Usuarios usuarios;
     private final Codigos codigos;
     private final Consultas consultas;
+    private final Posts posts;
     private final BCryptPasswordEncoder encoder;
     private final boolean demo;
     private final SecureRandom random = new SecureRandom();
 
-    Api(Usuarios usuarios, Codigos codigos, Consultas consultas, BCryptPasswordEncoder encoder,
+    Api(Usuarios usuarios, Codigos codigos, Consultas consultas, Posts posts, BCryptPasswordEncoder encoder,
         @Value("${polyforge.demo-code}") boolean demo) {
         this.usuarios = usuarios;
         this.codigos = codigos;
         this.consultas = consultas;
+        this.posts = posts;
         this.encoder = encoder;
         this.demo = demo;
     }
@@ -100,6 +102,14 @@ class Api {
         var u = usuarioActual(request);
         consultas.deleteByUsuarioId(u.id);
         codigos.deleteByUsuarioId(u.id);
+        for (var post : posts.relacionadosCon(u)) {
+            if (post.autor.equals(u)) {
+                posts.delete(post);
+            } else {
+                post.likes.remove(u);
+                post.guardados.remove(u);
+            }
+        }
         usuarios.delete(u);
         request.getSession(false).invalidate();
     }
@@ -143,6 +153,63 @@ class Api {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     void eliminar(@PathVariable Long id, HttpServletRequest request) {
         consultas.delete(buscar(id, request));
+    }
+
+
+    record Publicacion(@NotBlank @Size(max=120) String titulo,
+                       @NotBlank @Size(max=4000) String descripcion) {}
+    record Marca(@NotNull Boolean activo) {}
+    record PostVista(Long id, String titulo, String descripcion, int likes, boolean guardado) {}
+
+    @GetMapping("/posts")
+    List<PostVista> listarPosts(HttpServletRequest request) {
+        var usuario = usuarioActual(request);
+        return posts.findAllByOrderByIdDesc().stream()
+            .map(post -> vistaPost(post, usuario)).toList();
+    }
+
+    @PostMapping("/posts")
+    @ResponseStatus(HttpStatus.CREATED)
+    PostVista publicar(@Valid @RequestBody Publicacion datos, HttpServletRequest request) {
+        var post = new PostComunidad();
+        post.autor = usuarioActual(request);
+        post.titulo = datos.titulo().strip();
+        post.descripcion = datos.descripcion().strip();
+        return vistaPost(posts.save(post), post.autor);
+    }
+
+    @PutMapping("/posts/{id}/like")
+    PostVista marcarLike(@PathVariable Long id, @Valid @RequestBody Marca marca, HttpServletRequest request) {
+        var usuario = usuarioActual(request);
+        var post = buscarPost(id);
+        marcar(post.likes, usuario, marca.activo());
+        return vistaPost(post, usuario);
+    }
+
+    @PutMapping("/posts/{id}/guardado")
+    PostVista marcarGuardado(@PathVariable Long id, @Valid @RequestBody Marca marca, HttpServletRequest request) {
+        var usuario = usuarioActual(request);
+        var post = buscarPost(id);
+        marcar(post.guardados, usuario, marca.activo());
+        return vistaPost(post, usuario);
+    }
+
+    private PostComunidad buscarPost(Long id) {
+        return posts.buscarParaEditar(id)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    }
+
+    private static void marcar(Set<Usuario> usuarios, Usuario usuario, boolean activo) {
+        if (activo) {
+            usuarios.add(usuario);
+        } else {
+            usuarios.remove(usuario);
+        }
+    }
+
+    private static PostVista vistaPost(PostComunidad post, Usuario usuario) {
+        return new PostVista(post.id, post.titulo, post.descripcion, post.likes.size(),
+            post.guardados.contains(usuario));
     }
 
     private Usuario usuarioActual(HttpServletRequest request) {
