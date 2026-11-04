@@ -17,11 +17,15 @@ import { Component, input } from '@angular/core';
   styles: `
     :host {
       display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      vertical-align: middle;
       width: 1.25em;
       height: 1.25em;
       flex-shrink: 0;
     }
     svg {
+      display: block;
       width: 100%;
       height: 100%;
     }

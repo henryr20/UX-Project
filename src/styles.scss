@@ -6,22 +6,27 @@
   src: url('/fonts/InterVariable.woff2') format('woff2');
 }
 :root {
-  --radius-card: 16px;
+  --radius-card: 24px;
+  --radius-campo-amplio: var(--radius-card);
+  --mensaje-error: #ff969b;
+  --mensaje-exito: #83dda4;
   color-scheme: dark;
-  --bg: #18181d;
-  --panel: #222229;
+  --bg: #15171d;
+  --panel: #21262e;
   --text: #f4f4f8;
   --muted: #b5b5c4;
   --line: #383842;
   --purple: #bd9eff;
   --orange: #ff6b00;
-  --input: #1b1b22;
+  --input: #2d333d;
   font-family: 'Inter', system-ui, sans-serif;
   background: var(--bg);
   color: var(--text);
 }
 :root[data-theme='light'] {
   color-scheme: light;
+  --mensaje-error: #a51d32;
+  --mensaje-exito: #146338;
   --bg: #fafafa;
   --panel: #fff;
   --text: #24242d;
@@ -46,7 +51,7 @@ input {
 }
 button {
   border: 1px solid var(--line);
-  border-radius: 5px;
+  border-radius: 999px;
   background: var(--panel);
   color: var(--text);
   padding: 10px 15px;
@@ -57,9 +62,9 @@ button:hover {
   border-color: var(--purple);
 }
 .primary {
-  background: #7541ef;
+  background: #6845ef;
   color: white;
-  border-color: #7541ef;
+  border-color: #6845ef;
 }
 :focus-visible {
   outline: 3px solid var(--purple);
@@ -235,7 +240,7 @@ form > button {
   top: -100px;
   z-index: 20;
   padding: 14px;
-  background: #7541ef;
+  background: #6845ef;
   color: #fff;
 }
 .skip:focus {
@@ -350,7 +355,7 @@ form > button {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-radius: 9px;
+  border-radius: 999px;
   color: var(--purple);
   font-weight: 600;
 }
@@ -739,4 +744,18 @@ form > button {
   .login {
     padding: 28px 20px;
   }
+}
+
+input:is(:not([type]), [type='text'], [type='email'], [type='password'], [type='search'], [type='tel'], [type='url']) {
+  min-height: calc(var(--radius-card) * 2);
+  border-radius: 999px;
+}
+textarea {
+  border-radius: var(--radius-campo-amplio);
+}
+.mensaje-error {
+  color: var(--mensaje-error);
+}
+.mensaje-exito {
+  color: var(--mensaje-exito);
 }

@@ -169,7 +169,7 @@ footer {
     align-items: center;
     min-height: 44px;
     padding: 10px 12px;
-    border-radius: 8px;
+    border-radius: 999px;
   }
   .header-navigation > a:hover,
   .header-navigation > a.active {
@@ -181,7 +181,7 @@ footer {
     width: 100%;
     height: auto;
     min-height: 44px;
-    border-radius: 8px;
+    border-radius: 999px;
     justify-content: flex-start;
     gap: 12px;
     padding: 10px 12px;
