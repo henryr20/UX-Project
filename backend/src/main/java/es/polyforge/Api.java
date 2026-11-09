@@ -81,6 +81,28 @@ class Api {
         return Map.of("id", u.id, "email", u.email, "verificado", u.verificado);
     }
 
+    @PutMapping("/usuarios/me")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    void editarPerfil(@Valid @RequestBody Credenciales datos, HttpServletRequest request) {
+        var usuario = usuarioActual(request);
+        validarLongitud(datos.password());
+        if (usuario.passwordHash == null || !encoder.matches(datos.password(), usuario.passwordHash)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
+        String email = normalizar(datos.email());
+        if (email.equals(usuario.email)) return;
+        if (usuarios.existsByEmail(email)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT);
+        }
+        usuario.email = email;
+        usuario.verificado = false;
+        try {
+            usuarios.flush();
+        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "El correo ya está registrado", e);
+        }
+    }
+
     @DeleteMapping("/usuarios/me")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     void eliminarPerfil(HttpServletRequest request) {
@@ -179,15 +201,28 @@ class Api {
         return vistaPost(post, usuario);
     }
 
+    @PutMapping("/posts/{id}")
+    PostVista editarPost(@PathVariable Long id, @Valid @RequestBody Publicacion datos, HttpServletRequest request) {
+        var usuario = usuarioActual(request);
+        var post = buscarPostPropio(id, usuario);
+        post.titulo = datos.titulo().strip();
+        post.descripcion = datos.descripcion().strip();
+        return vistaPost(post, usuario);
+    }
+
     @DeleteMapping("/posts/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     void eliminarPost(@PathVariable Long id, HttpServletRequest request) {
         var usuario = usuarioActual(request);
+        posts.delete(buscarPostPropio(id, usuario));
+    }
+
+    private PostComunidad buscarPostPropio(Long id, Usuario usuario) {
         var post = buscarPost(id);
         if (!Objects.equals(post.autor.getId(), usuario.id)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
-        posts.delete(post);
+        return post;
     }
 
     private PostComunidad buscarPost(Long id) {

@@ -76,7 +76,7 @@ Abre [http://localhost:4200](http://localhost:4200). El frontend llama a la API 
 1. Entra en **Acceder → Regístrate** y crea una cuenta. La contraseña debe tener al menos ocho caracteres.
 2. Inicia sesión con tu correo y contraseña.
 3. En **Comunidad**, crea una publicación con título y descripción. Puedes buscar publicaciones, darles **Me gusta** y guardarlas.
-4. En **Mi perfil**, consulta o elimina tus publicaciones y gestiona tu sesión o cuenta.
+4. En **Mi perfil**, edita tu correo con la contraseña actual, gestiona tus publicaciones o cierra sesión.
 
 | Ruta | Contenido |
 | --- | --- |

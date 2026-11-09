@@ -21,6 +21,7 @@ export async function api<T>(path: string, method = 'GET', body?: object): Promi
     method,
     headers,
     credentials: 'include',
+    signal: AbortSignal.timeout(12000),
     body: body ? JSON.stringify(body) : undefined,
   });
   if (!response.ok) throw new ApiError(response.status);

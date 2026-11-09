@@ -26,10 +26,25 @@ interface Post {
           @if (correo()) {
             <p>{{ correo() }}</p>
             <div class="acciones">
+              <button type="button" [disabled]="ocupado()" (click)="abrirPerfil()">Editar perfil</button>
               <button type="button" [disabled]="ocupado()" (click)="cerrarSesion()">Cerrar sesión</button>
               <button type="button" class="mensaje-error" [disabled]="ocupado()"
                 (click)="pedirConfirmacion(confirmacion, null)">Eliminar cuenta</button>
             </div>
+            @if (editandoPerfil()) {
+              <form class="panel editor-perfil" (ngSubmit)="guardarPerfil()" #perfilForm="ngForm">
+                <label for="correo-nuevo">Nuevo correo electrónico</label>
+                <input id="correo-nuevo" name="correoNuevo" type="email" autocomplete="email"
+                  [(ngModel)]="correoNuevo" required email maxlength="254" />
+                <label for="clave-actual">Contraseña actual</label>
+                <input id="clave-actual" name="claveActual" type="password" autocomplete="current-password"
+                  [(ngModel)]="claveActual" required maxlength="72" />
+                <div class="acciones">
+                  <button type="button" [disabled]="ocupado()" (click)="cancelarPerfil()">Cancelar</button>
+                  <button class="primary" type="submit" [disabled]="perfilForm.invalid || ocupado()">Guardar cambios</button>
+                </div>
+              </form>
+            }
           }
         } @else {
           <p>Comparte tus proyectos 3D y descubre lo que está creando la comunidad.</p>
@@ -73,6 +88,7 @@ interface Post {
                   {{ post.guardado ? 'Guardado' : 'Guardar' }}
                 </button>
                 @if (post.propio) {
+                  <button type="button" [disabled]="ocupado()" (click)="abrirEditor(editor, post)">Editar</button>
                   <button type="button" class="mensaje-error" [disabled]="ocupado()"
                     (click)="pedirConfirmacion(confirmacion, post)">Eliminar</button>
                 }
@@ -85,7 +101,7 @@ interface Post {
       }
       <dialog #editor aria-labelledby="editor-titulo" (cancel)="cerrarEditor($event)">
         <div class="cabecera-editor">
-          <h2 id="editor-titulo">Nueva publicación</h2>
+          <h2 id="editor-titulo">{{ postEditado() ? 'Editar publicación' : 'Nueva publicación' }}</h2>
           <button type="button" aria-label="Cerrar" [disabled]="ocupado()" (click)="editor.close()">×</button>
         </div>
         <form (ngSubmit)="publicar(editor, form)" #form="ngForm">
@@ -101,7 +117,7 @@ interface Post {
           <div class="acciones acciones-editor">
             <button type="button" [disabled]="ocupado()" (click)="editor.close()">Cancelar</button>
             <button class="primary" type="submit" [disabled]="form.invalid || ocupado()">
-              {{ ocupado() ? 'Publicando…' : 'Publicar' }}
+              {{ ocupado() ? 'Guardando…' : postEditado() ? 'Guardar cambios' : 'Publicar' }}
             </button>
           </div>
         </form>
@@ -139,6 +155,7 @@ interface Post {
     .herramientas { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
     .herramientas input { flex: 1 1 240px; }
     .herramientas input, .herramientas button { height: calc(var(--radius-card) * 2); }
+    .editor-perfil { margin-top: 16px; }
     .filtros { margin-top: 12px; }
     dialog {
       width: min(520px, calc(100% - 32px)); padding: 24px;
@@ -169,6 +186,9 @@ export class Comunidad implements OnInit {
   private readonly router = inject(Router);
   readonly perfil = inject(ActivatedRoute).snapshot.data['perfil'] === true;
   readonly correo = signal('');
+  readonly editandoPerfil = signal(false);
+  correoNuevo = '';
+  claveActual = '';
   readonly posts = signal<Post[]>([]);
   readonly busqueda = signal('');
   readonly soloGuardados = signal(false);
@@ -218,7 +238,12 @@ export class Comunidad implements OnInit {
     }
   }
 
-  abrirEditor(editor: HTMLDialogElement) {
+  readonly postEditado = signal<Post | null>(null);
+
+  abrirEditor(editor: HTMLDialogElement, post: Post | null = null) {
+    this.postEditado.set(post);
+    this.titulo = post?.titulo ?? '';
+    this.descripcion = post?.descripcion ?? '';
     this.mensaje.set('');
     editor.showModal();
   }
@@ -236,6 +261,15 @@ export class Comunidad implements OnInit {
       return;
     }
     await this.actualizar(async () => {
+      const editado = this.postEditado();
+      if (editado) {
+        const post = await api<Post>(`/posts/${editado.id}`, 'PUT', { titulo, descripcion });
+        this.posts.update(posts => posts.map(item => item.id === post.id ? post : item));
+        form.resetForm({ titulo: '', descripcion: '' });
+        editor.close();
+        this.exito.set('Publicación actualizada.');
+        return;
+      }
       const post = await api<Post>('/posts', 'POST', { titulo, descripcion });
       this.posts.update(posts => [post, ...posts]);
       form.resetForm({ titulo: '', descripcion: '' });
@@ -281,6 +315,43 @@ export class Comunidad implements OnInit {
     });
   }
 
+  abrirPerfil() {
+    this.correoNuevo = this.correo();
+    this.claveActual = '';
+    this.editandoPerfil.set(true);
+  }
+
+  cancelarPerfil() {
+    this.claveActual = '';
+    this.editandoPerfil.set(false);
+  }
+
+  async guardarPerfil() {
+    await this.actualizar(async () => {
+      const email = this.correoNuevo.trim();
+      try {
+        await api('/usuarios/me', 'PUT', { email, password: this.claveActual });
+      } catch (error) {
+        if (error instanceof ApiError && error.status === 403) {
+          this.mensaje.set('No se pudo confirmar la contraseña actual.');
+          return;
+        }
+        if (error instanceof ApiError && error.status === 409) {
+          this.mensaje.set('Ya existe una cuenta con ese correo.');
+          return;
+        }
+        if (error instanceof ApiError && error.status === 400) {
+          this.mensaje.set('Revisa el formato del correo y la contraseña.');
+          return;
+        }
+        throw error;
+      }
+      this.correo.set(email.toLowerCase());
+      this.cancelarPerfil();
+      this.exito.set('Perfil actualizado.');
+    });
+  }
+
   async cerrarSesion() {
     await this.actualizar(async () => {
       await api('/sesion', 'DELETE');
@@ -304,6 +375,11 @@ export class Comunidad implements OnInit {
   }
 
   private mostrarError(error: unknown) {
+    if (error instanceof DOMException && error.name === 'TimeoutError') {
+      this.mensaje.set('El servidor tardó demasiado. Recarga la página para comprobar si se aplicó el cambio.');
+      return;
+    }
+
     if (error instanceof ApiError && error.status === 401) {
       sesionActiva.set(false);
       this.correo.set('');
