@@ -28,6 +28,13 @@
       >Inicio</a
     >
     <a
+      routerLink="/comunidad"
+      routerLinkActive="active"
+      ariaCurrentWhenActive="page"
+      (click)="navigateFromMenu()"
+      >Comunidad</a
+    >
+    <a
       routerLink="/ayuda"
       routerLinkActive="active"
       ariaCurrentWhenActive="page"
@@ -35,11 +42,11 @@
       >Ayuda</a
     >
     <a
-      routerLink="/login"
+      [routerLink]="sesionActiva() ? '/perfil' : '/login'"
       routerLinkActive="active"
       ariaCurrentWhenActive="page"
       (click)="navigateFromMenu()"
-      >Acceder</a
+      >{{ sesionActiva() ? 'Mi perfil' : 'Acceder' }}</a
     >
     <button
       class="theme-toggle"
@@ -68,7 +75,7 @@
     </div>
     <nav aria-label="Enlaces del pie de página">
       <a routerLink="/inicio">Inicio</a><a routerLink="/ayuda">Preguntas frecuentes</a
-      ><a routerLink="/login">Acceder</a>
+      ><a [routerLink]="sesionActiva() ? '/perfil' : '/login'">{{ sesionActiva() ? 'Mi perfil' : 'Acceder' }}</a>
     </nav>
   </div>
   <div class="footer-bottom">

@@ -1,4 +1,5 @@
 import { Component, signal, HostListener } from '@angular/core';
+import { api, sesionActiva } from './api';
 import { Icon } from './components/icon';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 
@@ -9,6 +10,7 @@ import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
   styleUrl: './app.scss',
 })
 export class App {
+  readonly sesionActiva = sesionActiva;
   menuOpen = signal(false);
   light = signal(false);
   closeMenu(restoreFocus = false) {
@@ -29,6 +31,7 @@ export class App {
   }
   online = signal(navigator.onLine);
   constructor() {
+    void api('/usuarios/me').then(() => sesionActiva.set(true)).catch(() => {});
     try {
       this.light.set(localStorage.getItem('polyforge-theme') === 'light');
     } catch {}

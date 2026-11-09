@@ -12,6 +12,23 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/login').then((m) => m.Login),
   },
   {
+    path: 'registro',
+    title: 'Registro · PolyForge',
+    data: { registro: true },
+    loadComponent: () => import('./pages/login').then((m) => m.Login),
+  },
+  {
+    path: 'comunidad',
+    title: 'Comunidad · PolyForge',
+    loadComponent: () => import('./pages/comunidad').then((m) => m.Comunidad),
+  },
+  {
+    path: 'perfil',
+    title: 'Mi perfil · PolyForge',
+    data: { perfil: true },
+    loadComponent: () => import('./pages/comunidad').then((m) => m.Comunidad),
+  },
+  {
     path: 'ayuda',
     title: 'Ayuda · PolyForge',
     loadComponent: () => import('./pages/help').then((m) => m.Help),

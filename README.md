@@ -2,103 +2,120 @@
   <img src="public/images/logo.png" alt="Logo de PolyForge" width="76" />
 </p>
 
-<h1 align="center">PolyForge</h1>
+# PolyForge
 
-<p align="center">Una plataforma de aprendizaje de modelado 3D, texturizado e iluminación.</p>
+Proyecto de una web de aprendizaje de modelado 3D, texturizado e iluminación, con frontend en Angular y API en Spring Boot. Incluye registro de usuarios y una comunidad para compartir publicaciones de texto.
 
-<p align="center">
-  <a href="#el-proyecto">El proyecto</a> ·
-  <a href="#puesta-en-marcha">Instalación</a> ·
-  <a href="#probar-la-aplicación">Uso</a> ·
-  <a href="https://app.notion.com/p/4077ad838e1e80fea025f905af47f8f5?v=4077ad838e1e805dbe1a000cc0f5d6bc">Tablero de tareas</a>
-</p>
+Los cursos, las estadísticas y los porcentajes de progreso son datos de muestra. Las lecciones todavía no están disponibles.
 
-## El proyecto
+## Funcionalidades
 
-PolyForge reúne cursos de creación 3D en una interfaz pensada para consultar el progreso y continuar aprendiendo. Este repositorio contiene el desarrollo de la interfaz y la navegación, realizado con Angular a partir de un prototipo en Figma.
-
-La versión actual incluye Inicio, Acceso, Ayuda y una página de error 404. Los cursos y sus porcentajes de progreso son datos de muestra. El acceso permite probar el flujo de verificación, pero todavía no envía correos ni crea una sesión de usuario.
-
-### Funciones disponibles
-
-- Inicio con progreso circular, estadísticas y tarjetas de cursos con imágenes propias.
-- Temas claro y oscuro con portada adaptada y preferencia guardada en el navegador.
-- Menú móvil superpuesto con efecto de cristal y selección mediante color y subrayado.
-- Acceso por correo y código de seis dígitos, con pegado del código, reenvío y cambio de correo.
-- Preguntas frecuentes desplegables y animadas.
-- Página 404 con enlaces para recuperar la navegación.
-- Validación de campos, mensajes de error y éxito, y aviso de falta de conexión.
-- Navegación con teclado, foco visible, etiquetas accesibles y respeto al movimiento reducido.
+- Registro e inicio de sesión con correo y contraseña.
+- Comunidad con creación de publicaciones, búsqueda por título y descripción, likes y filtro de guardadas. Requiere iniciar sesión.
+- Perfil con publicaciones propias, cierre de sesión y eliminación de cuenta. Al borrar la cuenta también se eliminan sus publicaciones y datos asociados.
+- Temas claro y oscuro con la preferencia guardada en el navegador.
+- Diseño adaptable, menú móvil, preguntas frecuentes y página 404.
+- Validación de formularios, avisos de estado y navegación con teclado.
 
 ## Tecnologías
 
-| Tecnología | Uso |
+| Parte | Tecnologías |
 | --- | --- |
-| Angular 21 | Componentes, rutas y formularios reactivos |
-| TypeScript 5.9 | Lógica de la aplicación |
-| SCSS | Estilos, temas y adaptación a distintos tamaños de pantalla |
-| Inter | Tipografía alojada localmente |
+| Frontend | Angular 21.2, TypeScript 5.9, RxJS y SCSS |
+| Backend | Java 21, Spring Boot 3.5, Spring Security y Maven |
+| Persistencia | Spring Data JPA, Hibernate y MySQL/MariaDB |
+| Recursos | Tipografía Inter alojada localmente e imágenes en `public/` |
 
-## Puesta en marcha
+## Instalación y ejecución
 
 ### Requisitos
 
-- Node.js compatible con Angular 21: `20.19.x` o superior de la rama 20, `22.12.x` o superior de la rama 22, o una versión igual o superior a 24.
-- npm. El proyecto declara la versión `11.19.0` como gestor de paquetes.
-- Git para clonar el repositorio.
+- Node.js `^20.19.0`, `^22.12.0` o `>=24.0.0`, según las dependencias del archivo de bloqueo.
+- npm; `package.json` declara `npm@11.19.0`.
+- JDK 21 y Maven, instalado o integrado en IntelliJ IDEA.
+- MySQL o MariaDB en ejecución. Puedes usar el servicio MySQL de XAMPP.
 
-### Instalación
+### 1. Backend
+
+La configuración por defecto conecta con `localhost:3306`, usuario `root` y contraseña vacía. Crea la base de datos `polyforge` si el usuario tiene permisos; Hibernate crea o actualiza las tablas.
+
+Puedes ajustar la conexión mediante variables de entorno:
+
+| Variable | Valor por defecto | Uso |
+| --- | --- | --- |
+| `DB_URL` | `jdbc:mysql://localhost:3306/polyforge?createDatabaseIfNotExist=true` | URL JDBC de la base de datos |
+| `DB_USER` | `root` | Usuario de la base de datos |
+| `DB_PASSWORD` | Vacía | Contraseña de la base de datos |
+| `DB_SCHEMA` | `update` | Modo de gestión del esquema de Hibernate |
+| `ANGULAR_ORIGIN` | `http://localhost:4200` | Origen del frontend permitido por CORS |
+
+Desde la raíz del proyecto, con Maven disponible:
 
 ```bash
-git clone https://github.com/henryr20/UX-Project.git
-cd UX-Project
+cd backend
+mvn spring-boot:run
+```
+
+También puedes abrir `backend/pom.xml` en IntelliJ IDEA, seleccionar JDK 21 y ejecutar [PolyForge.java](backend/src/main/java/es/polyforge/PolyForge.java).
+
+La API se sirve en `http://localhost:8080/api`.
+
+### 2. Frontend
+
+En otra terminal, desde la raíz del proyecto:
+
+```bash
 npm ci
 npm start
 ```
 
-Abre [http://localhost:4200](http://localhost:4200) en el navegador. Los cambios en el código se reflejan automáticamente mientras el servidor está en ejecución.
+Abre [http://localhost:4200](http://localhost:4200). El frontend llama a la API en el puerto `8080` del mismo servidor indicado en la URL del navegador. Para probar el registro, el perfil y la comunidad, mantén el backend y la base de datos en marcha.
 
-No hace falta configurar claves, variables de entorno ni servicios externos.
+## Uso
 
-## Probar la aplicación
+1. Entra en **Acceder → Regístrate** y crea una cuenta. La contraseña debe tener al menos ocho caracteres.
+2. Inicia sesión con tu correo y contraseña.
+3. En **Comunidad**, crea una publicación con título y descripción. Puedes buscar publicaciones, darles **Me gusta** y guardarlas.
+4. En **Mi perfil**, edita tu correo con la contraseña actual, gestiona tus publicaciones o cierra sesión.
 
-| Ruta | Pantalla |
+| Ruta | Contenido |
 | --- | --- |
-| `/inicio` | Progreso, estadísticas y selección de cursos |
-| `/login` | Acceso de prueba con correo y código |
+| `/inicio` | Cursos y progreso de muestra |
+| `/login` | Inicio de sesión |
+| `/registro` | Creación de cuenta |
+| `/comunidad` | Publicaciones y guardadas |
+| `/perfil` | Cuenta y publicaciones propias |
 | `/ayuda` | Preguntas frecuentes |
-| Cualquier ruta inexistente | Error 404 |
+| Otras rutas | Página 404 |
 
-Para probar el acceso:
+La sesión se mantiene mediante una cookie. Las contraseñas se almacenan como hashes BCrypt y las peticiones que modifican datos incluyen un token CSRF obtenido de `/api/csrf`.
 
-1. Introduce un correo con formato válido y pulsa **Enviar código**.
-2. Escribe o pega el código de prueba **371942**.
-3. Pulsa la flecha de verificación. La confirmación aparece en verde.
-
-Puedes introducir un correo incorrecto o un código incompleto para comprobar los mensajes de validación. El código se prepara localmente; no se envía ningún correo.
-
-Los botones de los cursos muestran un aviso de disponibilidad. Las lecciones y el guardado real del progreso quedan fuera de esta versión.
+**Detalle pendiente:** la página de Ayuda conserva un texto antiguo sobre acceso por código. El formulario actual usa correo y contraseña.
 
 ## Comandos
 
+Ejecutados desde la raíz del proyecto:
+
 | Comando | Descripción |
 | --- | --- |
-| `npm start` | Inicia el servidor de desarrollo |
-| `npm run build` | Genera la versión de producción en `dist/polyforge/` |
-| `npm run watch` | Compila en modo desarrollo y observa los cambios |
+| `npm start` | Inicia Angular en modo desarrollo |
+| `npm run build` | Genera la compilación de producción en `dist/polyforge/` |
+| `npm run watch` | Compila en modo desarrollo y vuelve a compilar al guardar cambios |
 
-## Organización del código
+## Estructura
 
 ```text
 src/
 ├── app/
-│   ├── components/     Tarjetas de curso e iconos reutilizables
-│   ├── pages/          Inicio, Acceso, Ayuda y error 404
+│   ├── components/     Tarjetas de curso e iconos
+│   ├── pages/          Inicio, acceso, comunidad, perfil, ayuda y 404
+│   ├── api.ts          Peticiones a la API y estado de sesión
 │   ├── app.routes.ts   Rutas de navegación
-│   ├── app.config.ts   Configuración de la aplicación
-│   ├── app.html        Cabecera, navegación y footer
-│   └── app.scss        Estilos de la estructura general
+│   └── app.*           Componente principal, navegación y estilos
 └── styles.scss         Estilos compartidos y temas
+backend/
+├── pom.xml             Dependencias y configuración Maven
+└── src/main/           API, entidades, repositorios y configuración
 public/
 ├── fonts/              Inter y su licencia
 └── images/             Logotipo, portadas e imágenes de cursos
