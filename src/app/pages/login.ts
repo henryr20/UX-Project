@@ -10,7 +10,7 @@ import { api, ApiError, sesionActiva } from '../api';
   template: `
     <section class="wrap cuenta">
       <div class="panel">
-        <img class="logo-cuenta" src="images/logo.png" alt="" width="56" height="66" />
+        <img class="logo-cuenta" src="images/logo.webp" alt="" width="56" height="66" />
         <h1>{{ registro ? 'Crear cuenta' : 'Iniciar sesión' }}</h1>
         <form (ngSubmit)="enviar()" #form="ngForm">
           <label for="email">Correo electrónico</label>

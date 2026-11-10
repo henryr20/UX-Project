@@ -1,10 +1,12 @@
 import { Routes } from '@angular/router';
+import { Home } from './pages/home';
+
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'inicio' },
   {
     path: 'inicio',
     title: 'Inicio · PolyForge',
-    loadComponent: () => import('./pages/home').then((m) => m.Home),
+    component: Home,
   },
   {
     path: 'login',

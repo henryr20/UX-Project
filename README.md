@@ -117,7 +117,7 @@ backend/
 ├── pom.xml             Dependencias y configuración Maven
 └── src/main/           API, entidades, repositorios y configuración
 public/
-├── fonts/              Inter y su licencia
+├── fonts/              Archivos originales de Inter y su licencia
 └── images/             Logotipo, portadas e imágenes de cursos
 ```
 

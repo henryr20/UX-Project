@@ -1,5 +1,6 @@
 import { Component, signal, HostListener } from '@angular/core';
 import { api, sesionActiva } from './api';
+import { temaClaro } from './theme';
 import { Icon } from './components/icon';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 
@@ -12,7 +13,7 @@ import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 export class App {
   readonly sesionActiva = sesionActiva;
   menuOpen = signal(false);
-  light = signal(false);
+  light = temaClaro;
   closeMenu(restoreFocus = false) {
     if (!this.menuOpen()) return;
     this.menuOpen.set(false);

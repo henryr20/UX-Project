@@ -1,4 +1,5 @@
 import { Component, signal } from '@angular/core';
+import { temaClaro } from '../theme';
 import { CourseCard, Course } from '../components/course-card';
 @Component({
   standalone: true,
@@ -42,19 +43,15 @@ import { CourseCard, Course } from '../components/course-card';
       </section>
       <div class="hero-visual">
         <img
-          class="cover cover-light"
-          src="images/portada-geometria.png"
-          width="1536"
-          height="1024"
-          alt="Cubo terracota, esfera lavanda y cilindro gris con materiales mates y luz natural"
-          fetchpriority="high"
-        />
-        <img
-          class="cover cover-dark"
-          src="images/portada-geometria-oscura.png"
-          width="1536"
-          height="1024"
-          alt="Cubo terracota, esfera lavanda y cilindro blanco sobre un fondo oscuro"
+          class="cover"
+          [src]="temaClaro() ? 'images/portada-geometria.webp' : 'images/portada-geometria-oscura.webp'"
+          [attr.srcset]="temaClaro()
+            ? 'images/portada-geometria-640.webp 640w, images/portada-geometria.webp 1280w'
+            : 'images/portada-geometria-oscura-640.webp 640w, images/portada-geometria-oscura.webp 1280w'"
+          sizes="(max-width: 800px) 90vw, (max-width: 1333px) 46vw, 610px"
+          width="1280"
+          height="853"
+          alt="Cubo, esfera y cilindro con materiales de distintos colores"
           fetchpriority="high"
         />
       </div>
@@ -72,27 +69,28 @@ import { CourseCard, Course } from '../components/course-card';
   </section>`,
 })
 export class Home {
+  readonly temaClaro = temaClaro;
   message = signal('');
   courses: Course[] = [
     {
       name: 'Modelado 3D desde cero',
       category: 'Modelado',
       progress: 40,
-      image: 'images/curso-modelado.png',
+      image: 'images/curso-modelado.webp',
       imageAlt: 'Lámpara de escritorio con una parte del modelo mostrando su malla poligonal',
     },
     {
       name: 'Primeras texturas',
       category: 'Texturizado',
       progress: 20,
-      image: 'images/curso-texturas.png',
+      image: 'images/curso-texturas.webp',
       imageAlt: 'Estudio de materiales con una taza de cerámica y muestras de superficies',
     },
     {
       name: 'Iluminación básica',
       category: 'Render',
       progress: 65,
-      image: 'images/curso-iluminacion.png',
+      image: 'images/curso-iluminacion.webp',
       imageAlt: 'Escena arquitectónica con un arco y una silla iluminados lateralmente',
     },
   ];

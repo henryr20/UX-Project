@@ -63,8 +63,14 @@ interface Post {
       } @else if (listaDisponible()) {
         @if (!perfil) {
         <div class="herramientas">
-          <input type="search" aria-label="Buscar publicaciones" placeholder="Buscar proyectos, ideas…"
-            [ngModel]="busqueda()" (ngModelChange)="busqueda.set($event)" />
+          <div class="campo-busqueda">
+            <input #buscador type="search" aria-label="Buscar publicaciones" placeholder="Buscar proyectos, ideas…"
+              [ngModel]="busqueda()" (ngModelChange)="busqueda.set($event)" />
+            @if (busqueda()) {
+              <button class="limpiar-busqueda" type="button" aria-label="Limpiar búsqueda"
+                (click)="busqueda.set(''); buscador.focus()">×</button>
+            }
+          </div>
           <button class="primary" type="button" [disabled]="ocupado()" (click)="abrirEditor(editor)">
             + Nueva publicación
           </button>
@@ -76,6 +82,9 @@ interface Post {
         }
         <section class="publicaciones" aria-labelledby="publicaciones">
           <h2 id="publicaciones">{{ perfil ? 'Mis publicaciones' : 'Publicaciones' }}</h2>
+          <p class="hint contador-resultados">
+            {{ resultados().length === 1 ? '1 publicación encontrada' : resultados().length + ' publicaciones encontradas' }}
+          </p>
           @for (post of resultados(); track post.id) {
             <article class="panel">
               <h3>{{ post.titulo }}</h3>
@@ -153,9 +162,17 @@ interface Post {
       background: var(--input); border: 1px solid var(--line); }
 
     .herramientas { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
-    .herramientas input { flex: 1 1 240px; }
-    .herramientas input, .herramientas button { height: calc(var(--radius-card) * 2); }
+    .campo-busqueda { position: relative; flex: 1 1 240px; min-width: 0; }
+    .campo-busqueda input, .herramientas > button { height: calc(var(--radius-card) * 2); }
+    .campo-busqueda input { padding-inline-end: 48px; }
+    .campo-busqueda input::-webkit-search-cancel-button { display: none; }
+    .limpiar-busqueda {
+      position: absolute; inset-inline-end: 6px; top: 50%; transform: translateY(-50%);
+      display: grid; place-items: center; width: 36px; height: 36px; padding: 0;
+      background: transparent; border-color: transparent; font-size: 22px; line-height: 1;
+    }
     .editor-perfil { margin-top: 16px; }
+    .contador-resultados { margin: 0; }
     .filtros { margin-top: 12px; }
     dialog {
       width: min(520px, calc(100% - 32px)); padding: 24px;

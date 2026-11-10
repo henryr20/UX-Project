@@ -16,8 +16,10 @@ export interface Course {
       <img
         [src]="course().image"
         [alt]="course().imageAlt"
-        width="1536"
-        height="1024"
+        [attr.srcset]="course().image.replace('.webp', '-384.webp') + ' 384w, ' + course().image + ' 768w'"
+        sizes="(max-width: 540px) 90vw, (max-width: 900px) 45vw, (max-width: 1333px) 29vw, 380px"
+        width="768"
+        height="512"
         loading="lazy"
         decoding="async"
       />
