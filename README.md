@@ -121,6 +121,22 @@ public/
 └── images/             Logotipo, portadas e imágenes de cursos
 ```
 
+## Aplicación Android (PGL)
+
+1. Arranca MySQL en XAMPP y ejecuta el backend Java en el puerto `8080`.
+2. En Android Studio, abre la carpeta `android/` como proyecto, sincroniza Gradle y ejecuta el módulo `app` en un emulador.
+3. Entra con una cuenta de PolyForge o regístrate en la app. En **Comunidad** puedes listar, publicar, editar y eliminar tus posts. Comprueba en la web que aparecen los mismos cambios.
+
+| Actividad | Interfaz | Función |
+| --- | --- | --- |
+| Acceso | XML Views | Registro e inicio de sesión |
+| Comunidad | Jetpack Compose | Listado, guardados, likes y borrado de publicaciones propias |
+| Editor | XML Views | Crear y editar una publicación |
+
+Las actividades gestionan la interfaz y delegan las llamadas a la API en la capa de datos. La app usa la cookie de sesión y el token CSRF del backend. El emulador usa `http://10.0.2.2:8080/api` para acceder al servidor del PC.
+
+En un móvil físico de la misma red, configura `polyforgeApiUrl=http://IP_DEL_PC:8080/api` en las propiedades de Gradle y recompila. El acceso HTTP está habilitado en la compilación de depuración para las pruebas locales.
+
 ## Autor
 
 **Enrique Javier Romero Ramírez** · [henryr20](https://github.com/henryr20)

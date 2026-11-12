@@ -1,0 +1,20 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/pantalla" android:layout_width="match_parent" android:layout_height="match_parent"
+    android:fillViewport="true">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="vertical" android:padding="24dp" android:gravity="center_vertical">
+        <TextView android:id="@+id/titulo" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:text="Iniciar sesión" android:textSize="28sp" />
+        <EditText android:id="@+id/correo" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:hint="Correo electrónico" android:inputType="textEmailAddress" android:maxLength="254" />
+        <EditText android:id="@+id/clave" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:hint="Contraseña" android:inputType="textPassword" android:maxLength="72"
+            android:saveEnabled="false" />
+        <Button android:id="@+id/entrar" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:text="Iniciar sesión" />
+        <Button android:id="@+id/alternar" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:text="¿No tienes cuenta? Regístrate" />
+        <TextView android:id="@+id/aviso" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:accessibilityLiveRegion="polite" />
+    </LinearLayout>
+</ScrollView>

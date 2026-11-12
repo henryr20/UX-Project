@@ -1,0 +1,19 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@id/pantalla" android:layout_width="match_parent" android:layout_height="match_parent">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="vertical" android:padding="24dp">
+        <TextView android:id="@id/titulo" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:textSize="28sp" />
+        <EditText android:id="@+id/asunto" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:hint="Título" android:inputType="textCapSentences" android:maxLength="120" />
+        <EditText android:id="@+id/descripcion" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:hint="Descripción" android:inputType="textCapSentences|textMultiLine"
+            android:gravity="top" android:minLines="4" android:maxLength="4000" />
+        <Button android:id="@+id/guardar" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:text="Guardar publicación" />
+        <Button android:id="@+id/cancelar" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:text="Cancelar" />
+        <TextView android:id="@id/aviso" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:accessibilityLiveRegion="polite" />
+    </LinearLayout>
+</ScrollView>
