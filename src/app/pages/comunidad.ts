@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, OnInit, computed, effect, inject, s
 import { Location } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { Icon } from '../components/icon';
 import { api, ApiError, sesionActiva } from '../api';
 
 interface Post {
@@ -15,7 +16,7 @@ interface Post {
 }
 
 @Component({
-  imports: [FormsModule, RouterLink],
+  imports: [FormsModule, RouterLink, Icon],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <section class="wrap">
@@ -71,6 +72,9 @@ interface Post {
                 (click)="busqueda.set(''); buscador.focus()">×</button>
             }
           </div>
+          <button type="button" [disabled]="ocupado()" (click)="recargarPublicaciones()">
+            Actualizar
+          </button>
           <button class="primary" type="button" [disabled]="ocupado()" (click)="abrirEditor(editor)">
             + Nueva publicación
           </button>
@@ -89,17 +93,29 @@ interface Post {
             <article class="panel">
               <h3>{{ post.titulo }}</h3>
               <p class="descripcion">{{ post.descripcion }}</p>
-              <div class="acciones">
+              <div class="acciones acciones-publicacion">
                 <button type="button" [attr.aria-pressed]="post.gustado" [disabled]="ocupado()"
-                  (click)="marcar(post, 'like', !post.gustado)">Me gusta · {{ post.likes }}</button>
-                <button type="button" [attr.aria-pressed]="post.guardado" [disabled]="ocupado()"
+                  [attr.aria-label]="'Me gusta: ' + post.likes"
+                  [title]="post.gustado ? 'Quitar Me gusta' : 'Dar Me gusta'"
+                  (click)="marcar(post, 'like', !post.gustado)">
+                  <pf-icon name="heart" [filled]="post.gustado" />
+                  <span aria-hidden="true">{{ post.likes }}</span>
+                </button>
+                <button type="button" aria-label="Guardar publicación"
+                  [attr.aria-pressed]="post.guardado" [disabled]="ocupado()"
+                  [title]="post.guardado ? 'Quitar de guardadas' : 'Guardar publicación'"
                   (click)="marcar(post, 'guardado', !post.guardado)">
-                  {{ post.guardado ? 'Guardado' : 'Guardar' }}
+                  <pf-icon name="bookmark" [filled]="post.guardado" />
                 </button>
                 @if (post.propio) {
-                  <button type="button" [disabled]="ocupado()" (click)="abrirEditor(editor, post)">Editar</button>
-                  <button type="button" class="mensaje-error" [disabled]="ocupado()"
-                    (click)="pedirConfirmacion(confirmacion, post)">Eliminar</button>
+                  <button type="button" aria-label="Editar publicación" title="Editar publicación"
+                    [disabled]="ocupado()" (click)="abrirEditor(editor, post)">
+                    <pf-icon name="edit" />
+                  </button>
+                  <button type="button" aria-label="Eliminar publicación" title="Eliminar publicación"
+                    [disabled]="ocupado()" (click)="pedirConfirmacion(confirmacion, post)">
+                    <pf-icon name="trash" />
+                  </button>
                 }
               </div>
             </article>
@@ -195,6 +211,22 @@ interface Post {
     textarea { resize: vertical; }
     form button { justify-self: start; }
     .acciones { display: flex; flex-wrap: wrap; gap: 8px; }
+    .acciones-publicacion { justify-content: flex-end; }
+    .acciones-publicacion > button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      min-width: 44px;
+      min-height: 44px;
+      padding: 6px 10px;
+      border: 0;
+      background: transparent;
+    }
+    .acciones-publicacion pf-icon { font-size: 16px; }
+    .acciones-publicacion > button:hover:not(:disabled) {
+      background: color-mix(in srgb, var(--purple) 16%, var(--panel));
+    }
     [aria-pressed="true"] { border-color: var(--purple); color: var(--purple); }
     .descripcion { white-space: pre-wrap; overflow-wrap: anywhere; }
   `,
@@ -246,13 +278,24 @@ export class Comunidad implements OnInit {
         const usuario = await api<{ email: string }>('/usuarios/me');
         this.correo.set(usuario.email);
       }
-      this.posts.set(await api<Post[]>('/posts'));
+      await this.cargarPublicaciones();
       this.listaDisponible.set(true);
     } catch (error) {
       this.mostrarError(error);
     } finally {
       this.cargando.set(false);
     }
+  }
+
+  async recargarPublicaciones() {
+    await this.actualizar(async () => {
+      await this.cargarPublicaciones();
+      this.exito.set('Lista de publicaciones actualizada.');
+    });
+  }
+
+  private async cargarPublicaciones() {
+    this.posts.set(await api<Post[]>('/posts'));
   }
 
   readonly postEditado = signal<Post | null>(null);
