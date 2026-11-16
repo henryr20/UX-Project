@@ -5,6 +5,7 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
+    "preview:pwa": "node scripts/serve-pwa.mjs",
     "watch": "ng build --watch --configuration development"
   },
   "private": true,
@@ -16,6 +17,7 @@
     "@angular/forms": "^21.2.0",
     "@angular/platform-browser": "^21.2.0",
     "@angular/router": "^21.2.0",
+    "@angular/service-worker": "21.2.25",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"
   },

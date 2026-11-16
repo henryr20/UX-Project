@@ -2,7 +2,7 @@ import { signal } from '@angular/core';
 
 export const sesionActiva = signal(false);
 
-const base = `${location.protocol}//${location.hostname}:8080/api`;
+const base = location.protocol === 'https:' ? '/api' : `http://${location.hostname}:8080/api`;
 
 export class ApiError extends Error {
   constructor(readonly status: number) {
