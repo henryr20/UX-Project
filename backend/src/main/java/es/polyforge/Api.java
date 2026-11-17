@@ -36,6 +36,7 @@ class Api {
                     @NotBlank @Size(max=4000) String mensaje) {}
     record ConsultaVista(Long id, String asunto, String mensaje, Instant creado) {}
 
+    // Spring Security proporciona el token que Angular enviará en la cabecera de las peticiones de escritura.
     @GetMapping("/csrf")
     CsrfToken csrf(CsrfToken token) { return token; }
 
@@ -62,9 +63,11 @@ class Api {
     void iniciarSesion(@Valid @RequestBody Credenciales datos, HttpServletRequest request) {
         validarLongitud(datos.password());
         var usuario = usuarios.buscarPorEmail(normalizar(datos.email()))
+            // BCrypt comprueba la contraseña contra el hash almacenado. Se devuelve el mismo 401 en ambos fallos.
             .filter(u -> u.passwordHash != null && encoder.matches(datos.password(), u.passwordHash))
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
         var session = request.getSession();
+        // Cambiamos el ID anterior al autenticar para evitar la fijación de sesión.
         request.changeSessionId();
         session.setAttribute("usuario", usuario.id);
     }
@@ -244,6 +247,7 @@ class Api {
     }
 
     private Usuario usuarioActual(HttpServletRequest request) {
+        // La cookie identifica la sesión existente. getSession(false) evita crear otra si falta.
         var session = request.getSession(false);
         if (session == null || !(session.getAttribute("usuario") instanceof Long id)) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);

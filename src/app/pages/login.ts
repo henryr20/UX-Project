@@ -85,13 +85,16 @@ export class Login {
 
   async enviar() {
     if (this.enviando() || (this.registro && this.confirmacion !== this.password)) return;
+    // Desactiva el botón mientras la API responde para evitar envíos duplicados.
     this.enviando.set(true);
     this.mensaje.set('');
     try {
+      // La función api() pide el token CSRF y envía el correo y la contraseña al servidor.
       await api(this.registro ? '/registro' : '/sesion', 'POST', {
         email: this.email.trim(),
         password: this.password,
       });
+      // Crear una cuenta lleva al formulario de acceso. Solo /sesion inicia la sesión.
       if (this.registro) {
         await this.router.navigateByUrl('/login', { state: { cuentaCreada: true } });
       } else {
@@ -99,6 +102,7 @@ export class Login {
         await this.router.navigateByUrl('/comunidad', { state: { sesionIniciada: true } });
       }
     } catch (error) {
+      // Usamos el estado HTTP de la API para mostrar un mensaje concreto.
       const status = error instanceof ApiError ? error.status : 0;
       const mensajes: Record<number, string> = {
         400: 'Revisa el correo y la longitud de la contraseña.',
