@@ -61,11 +61,19 @@ interface Post {
         </div>
       } @else if (cargando()) {
         <p role="status">Cargando publicaciones…</p>
+      } @else if (!listaDisponible()) {
+        <div class="panel">
+          <p role="alert">No se pudieron cargar las publicaciones. Comprueba tu conexión y vuelve a intentarlo.</p>
+          <button type="button" (click)="cargarListado()">Reintentar</button>
+        </div>
       } @else if (listaDisponible()) {
         @if (!perfil) {
+        <label for="buscar-publicaciones">Buscar publicaciones</label>
+        <p class="hint ayuda-busqueda" id="ayuda-busqueda">Busca por título o descripción (hasta 120 caracteres). Deja el campo vacío para ver todas las publicaciones del filtro seleccionado.</p>
         <div class="herramientas">
           <div class="campo-busqueda">
-            <input #buscador type="search" aria-label="Buscar publicaciones" placeholder="Buscar proyectos, ideas…"
+            <input #buscador id="buscar-publicaciones" type="search" maxlength="120"
+              aria-describedby="ayuda-busqueda" placeholder="Buscar proyectos, ideas…"
               [ngModel]="busqueda()" (ngModelChange)="busqueda.set($event)" />
             @if (busqueda()) {
               <button class="limpiar-busqueda" type="button" aria-label="Limpiar búsqueda"
@@ -86,8 +94,14 @@ interface Post {
         }
         <section class="publicaciones" aria-labelledby="publicaciones">
           <h2 id="publicaciones">{{ perfil ? 'Mis publicaciones' : 'Publicaciones' }}</h2>
-          <p class="hint contador-resultados">
-            {{ resultados().length === 1 ? '1 publicación encontrada' : resultados().length + ' publicaciones encontradas' }}
+          <p class="hint contador-resultados" role="status" aria-atomic="true">
+            @if (!perfil) {
+              Filtro aplicado: {{ soloGuardados() ? 'Guardadas' : 'Todas' }}.
+            }
+            {{ resultados().length === 1 ? '1 publicación encontrada' : resultados().length + ' publicaciones encontradas' }}.
+            @if (busqueda().trim()) {
+              Búsqueda: «{{ busqueda().trim() }}».
+            }
           </p>
           @for (post of resultados(); track post.id) {
             <article class="panel">
@@ -120,7 +134,7 @@ interface Post {
               </div>
             </article>
           } @empty {
-            <p>{{ busqueda().trim() ? 'No hay publicaciones que coincidan.' : soloGuardados() ? 'Todavía no tienes publicaciones guardadas.' : perfil ? 'Todavía no has publicado nada.' : 'Todavía no hay publicaciones.' }}</p>
+            <p>{{ busqueda().trim() ? 'No hay publicaciones que coincidan. Prueba con otro texto o limpia la búsqueda.' : soloGuardados() ? 'Todavía no tienes publicaciones guardadas. Selecciona Todas para volver al listado.' : perfil ? 'Todavía no has publicado nada.' : 'Todavía no hay publicaciones.' }}</p>
           }
         </section>
       }
@@ -188,7 +202,8 @@ interface Post {
       background: transparent; border-color: transparent; font-size: 22px; line-height: 1;
     }
     .editor-perfil { margin-top: 16px; }
-    .contador-resultados { margin: 0; }
+    .ayuda-busqueda { margin: 4px 0 10px; }
+    .contador-resultados { margin: 0; overflow-wrap: anywhere; }
     .filtros { margin-top: 12px; }
     dialog {
       width: min(520px, calc(100% - 32px)); padding: 24px;
@@ -272,7 +287,13 @@ export class Comunidad implements OnInit {
     }
   }
 
-  async ngOnInit() {
+  ngOnInit() {
+    void this.cargarListado();
+  }
+
+  async cargarListado() {
+    this.cargando.set(true);
+    this.mensaje.set('');
     try {
       if (this.perfil) {
         const usuario = await api<{ email: string }>('/usuarios/me');
@@ -281,7 +302,9 @@ export class Comunidad implements OnInit {
       await this.cargarPublicaciones();
       this.listaDisponible.set(true);
     } catch (error) {
-      this.mostrarError(error);
+      if (error instanceof ApiError && error.status === 401) {
+        this.mostrarError(error);
+      }
     } finally {
       this.cargando.set(false);
     }
