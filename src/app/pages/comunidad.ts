@@ -4,6 +4,7 @@ import { FormsModule, NgForm } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Icon } from '../components/icon';
 import { api, ApiError, sesionActiva } from '../api';
+import { Aprendizaje } from '../aprendizaje';
 
 interface Post {
   id: number;
@@ -32,6 +33,16 @@ interface Post {
               <button type="button" class="mensaje-error" [disabled]="ocupado()"
                 (click)="pedirConfirmacion(confirmacion, null)">Eliminar cuenta</button>
             </div>
+            <form class="panel preferencias" (ngSubmit)="guardarPreferencia()">
+              <h2>Preferencias de aprendizaje</h2>
+              <label for="categoria-preferida">Categoría preferida</label>
+              <select id="categoria-preferida" name="categoria" [(ngModel)]="categoriaPreferida">
+                <option>Todas</option><option>Modelado</option><option>Texturizado</option><option>Render</option>
+              </select>
+              <p class="hint">Se guarda en tu cuenta y se aplica al abrir Cursos.</p>
+              <button type="submit" [disabled]="aprendizaje.ocupado() || aprendizaje.cargando()">Guardar preferencia</button>
+              @if (aprendizaje.error()) { <p role="alert">{{ aprendizaje.error() }}</p> }
+            </form>
             @if (editandoPerfil()) {
               <form class="panel editor-perfil" (ngSubmit)="guardarPerfil()" #perfilForm="ngForm">
                 <label for="correo-nuevo">Nuevo correo electrónico</label>
@@ -248,6 +259,8 @@ interface Post {
 })
 export class Comunidad implements OnInit {
   private readonly router = inject(Router);
+  readonly aprendizaje = inject(Aprendizaje);
+  categoriaPreferida = 'Todas';
   readonly perfil = inject(ActivatedRoute).snapshot.data['perfil'] === true;
   readonly correo = signal('');
   readonly editandoPerfil = signal(false);
@@ -298,6 +311,8 @@ export class Comunidad implements OnInit {
       if (this.perfil) {
         const usuario = await api<{ email: string }>('/usuarios/me');
         this.correo.set(usuario.email);
+        await this.aprendizaje.cargar();
+        this.categoriaPreferida = this.aprendizaje.categoria();
       }
       await this.cargarPublicaciones();
       this.listaDisponible.set(true);
@@ -407,6 +422,12 @@ export class Comunidad implements OnInit {
   cancelarPerfil() {
     this.claveActual = '';
     this.editandoPerfil.set(false);
+  }
+
+  async guardarPreferencia() {
+    if (await this.aprendizaje.guardar('/preferencias', { categoria: this.categoriaPreferida })) {
+      this.exito.set('Preferencia guardada en tu cuenta.');
+    }
   }
 
   async guardarPerfil() {

@@ -8,6 +8,8 @@ export const routes: Routes = [
     title: 'Inicio · PolyForge',
     component: Home,
   },
+  { path: 'cursos', title: 'Cursos · PolyForge', loadComponent: () => import('./pages/cursos').then(m => m.Cursos) },
+  { path: 'cursos/:id', title: 'Lección · PolyForge', loadComponent: () => import('./pages/cursos').then(m => m.Cursos) },
   {
     path: 'login',
     title: 'Login · PolyForge',
@@ -35,6 +37,7 @@ export const routes: Routes = [
     title: 'Ayuda · PolyForge',
     loadComponent: () => import('./pages/help').then((m) => m.Help),
   },
+  { path: 'ayuda/:tema', title: 'Ayuda · PolyForge', loadComponent: () => import('./pages/help').then(m => m.Help) },
   {
     path: '**',
     title: 'Página no encontrada · PolyForge',

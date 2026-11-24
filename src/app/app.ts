@@ -28,7 +28,7 @@ export class App {
     if (!(event.target as Element).closest('.site-header')) this.closeMenu();
   }
   @HostListener('window:resize') resizeMenu() {
-    if (window.innerWidth > 640) this.closeMenu();
+    if (window.innerWidth > 800) this.closeMenu();
   }
   online = signal(navigator.onLine);
   constructor() {

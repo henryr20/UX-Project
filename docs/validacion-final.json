@@ -1,0 +1,44 @@
+{
+  "fecha": "2026-11-24",
+  "entorno": "Compilación de producción local HTTPS, Edge headless, simulación móvil, certificado local aceptado para la prueba",
+  "lighthouse": [
+    {
+      "ruta": "/inicio",
+      "fecha": "2026-11-24T15:41:41.864Z",
+      "performance": 96,
+      "accessibility": 100,
+      "best-practices": 96,
+      "seo": 100
+    },
+    {
+      "ruta": "/cursos",
+      "fecha": "2026-11-24T15:42:08.447Z",
+      "performance": 96,
+      "accessibility": 100,
+      "best-practices": 96,
+      "seo": 100
+    },
+    {
+      "ruta": "/ayuda",
+      "fecha": "2026-11-24T15:42:36.144Z",
+      "performance": 86,
+      "accessibility": 100,
+      "best-practices": 96,
+      "seo": 100
+    }
+  ],
+  "funcionalidad": [
+    "Registro y correo duplicado",
+    "Acceso desde la interfaz",
+    "Edición ajena rechazada",
+    "Progreso persistente y actualizaciones concurrentes",
+    "Aislamiento entre dos cuentas",
+    "Categoría preferida desde el perfil",
+    "Temas claro y oscuro",
+    "Ayuda real HelpNDoc con seis páginas, índice, búsqueda e imágenes",
+    "Responsive 390 y 768 píxeles",
+    "PWA con Inicio, curso y ayuda visitados disponibles offline",
+    "CSRF rechaza peticiones sin token",
+    "Eliminación de cuenta con progreso y cierre de sesión"
+  ]
+}

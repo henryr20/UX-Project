@@ -6,6 +6,10 @@ import org.springframework.data.jpa.repository.*;
 interface Usuarios extends JpaRepository<Usuario,Long> {
     boolean existsByEmail(String email);
 
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("select u from Usuario u where u.id = ?1")
+    Optional<Usuario> buscarParaActualizar(Long id);
+
     @Query("select u from Usuario u where u.email = ?1")
     Optional<Usuario> buscarPorEmail(String email);
 }

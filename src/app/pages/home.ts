@@ -1,6 +1,9 @@
-import { Component, signal } from '@angular/core';
+import { Component, computed, effect, inject } from '@angular/core';
 import { temaClaro } from '../theme';
-import { CourseCard, Course } from '../components/course-card';
+import { CourseCard } from '../components/course-card';
+import { Router } from '@angular/router';
+import { Aprendizaje } from '../aprendizaje';
+import { sesionActiva } from '../api';
 @Component({
   standalone: true,
   imports: [CourseCard],
@@ -8,7 +11,7 @@ import { CourseCard, Course } from '../components/course-card';
     <div class="home-heading">
       <h1>Inicio</h1>
       <p>Aprende modelado 3D a tu ritmo.</p>
-      <p class="hint">Estás explorando como invitado. El progreso mostrado es de muestra.</p>
+      <p class="hint">{{ sesion() ? 'Tu avance se guarda en tu cuenta.' : 'Explora los cursos y practica a tu ritmo.' }}</p>
     </div>
     <div class="intro">
       <section class="panel progress-card" aria-labelledby="progress-title">
@@ -21,12 +24,12 @@ import { CourseCard, Course } from '../components/course-card';
             class="radial"
             role="progressbar"
             aria-label="Progreso general"
-            aria-valuenow="35"
+            [attr.aria-valuenow]="estado.progreso()" [style.background]="radial()"
             aria-valuemin="0"
             aria-valuemax="100"
           >
             <div class="radial-value">
-              <strong>35<span>%</span></strong>
+              <strong>{{ estado.progreso() }}<span>%</span></strong>
             </div>
           </div>
           <div class="progress-copy">
@@ -36,9 +39,9 @@ import { CourseCard, Course } from '../components/course-card';
           </div>
         </div>
         <div class="progress-stats">
-          <div><strong>5</strong><span>Cursos</span></div>
-          <div><strong>12</strong><span>Lecciones</span></div>
-          <div><strong>2</strong><span>Proyectos</span></div>
+          <div><strong>3</strong><span>Cursos</span></div>
+          <div><strong>{{ estado.completadas().length }}</strong><span>Lecciones completadas</span></div>
+          <div><strong>{{ terminados() }}</strong><span>Cursos completados</span></div>
         </div>
       </section>
       <div class="hero-visual">
@@ -58,40 +61,29 @@ import { CourseCard, Course } from '../components/course-card';
     </div>
     <h2 class="section-title">Continuar aprendiendo</h2>
     <div class="course-grid">
-      @for (course of courses; track course.name) {
+      @for (course of estado.cursos(); track course.name) {
         <pf-course-card
           [course]="course"
-          (select)="message.set('Las lecciones de este curso estarán disponibles próximamente.')"
+          (select)="abrirCurso(course.id)"
         />
       }
     </div>
-    <p class="hint" role="status">{{ message() }}</p>
+    @if (estado.error()) { <p role="alert">{{ estado.error() }}</p><button type="button" (click)="estado.cargar()">Reintentar</button> }
   </section>`,
 })
 export class Home {
   readonly temaClaro = temaClaro;
-  message = signal('');
-  courses: Course[] = [
-    {
-      name: 'Modelado 3D desde cero',
-      category: 'Modelado',
-      progress: 40,
-      image: 'images/curso-modelado.webp',
-      imageAlt: 'Lámpara de escritorio con una parte del modelo mostrando su malla poligonal',
-    },
-    {
-      name: 'Primeras texturas',
-      category: 'Texturizado',
-      progress: 20,
-      image: 'images/curso-texturas.webp',
-      imageAlt: 'Estudio de materiales con una taza de cerámica y muestras de superficies',
-    },
-    {
-      name: 'Iluminación básica',
-      category: 'Render',
-      progress: 65,
-      image: 'images/curso-iluminacion.webp',
-      imageAlt: 'Escena arquitectónica con un arco y una silla iluminados lateralmente',
-    },
-  ];
+  readonly sesion = sesionActiva;
+  readonly estado = inject(Aprendizaje);
+  private readonly router = inject(Router);
+  readonly terminados = computed(() => this.estado.cursos().filter(c => c.progress === 100).length);
+  readonly radial = computed(() => `conic-gradient(var(--orange) ${this.estado.progreso()}%, var(--line) 0)`);
+
+  constructor() {
+    effect(() => { if (this.sesion()) void this.estado.cargar(); });
+  }
+
+  abrirCurso(id: string) {
+    void this.router.navigate(['/cursos', id]);
+  }
 }

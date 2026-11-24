@@ -1,0 +1,107 @@
+{
+  "date": "2026-11-23",
+  "version": "0c2d9da + corrección de Ayuda",
+  "resources": [
+    {
+      "name": "http://localhost:4200/styles-GJQQL3W6.css",
+      "bytes": 10021,
+      "encoded": 10021,
+      "transfer": 10321
+    },
+    {
+      "name": "http://localhost:4200/chunk-FLF6IJRG.js",
+      "bytes": 624,
+      "encoded": 624,
+      "transfer": 924
+    },
+    {
+      "name": "http://localhost:4200/chunk-CRNOCJGO.js",
+      "bytes": 1683,
+      "encoded": 1683,
+      "transfer": 1983
+    },
+    {
+      "name": "http://localhost:4200/main-4OAG52OK.js",
+      "bytes": 20777,
+      "encoded": 20777,
+      "transfer": 21077
+    },
+    {
+      "name": "http://localhost:4200/chunk-OIRI4IJE.js",
+      "bytes": 235746,
+      "encoded": 235746,
+      "transfer": 236046
+    },
+    {
+      "name": "http://localhost:8080/api/usuarios/me",
+      "bytes": 0,
+      "encoded": 0,
+      "transfer": 0
+    },
+    {
+      "name": "http://localhost:4200/images/logo.webp",
+      "bytes": 7642,
+      "encoded": 7642,
+      "transfer": 7942
+    },
+    {
+      "name": "http://localhost:4200/chunk-7VNKPXJF.js",
+      "bytes": 20430,
+      "encoded": 20430,
+      "transfer": 20730
+    },
+    {
+      "name": "http://localhost:4200/chunk-EB7Q2W3Z.js",
+      "bytes": 30842,
+      "encoded": 30842,
+      "transfer": 31142
+    },
+    {
+      "name": "http://localhost:4200/favicon.ico",
+      "bytes": 15086,
+      "encoded": 15086,
+      "transfer": 15386
+    },
+    {
+      "name": "http://localhost:8080/api/posts",
+      "bytes": 0,
+      "encoded": 0,
+      "transfer": 0
+    }
+  ],
+  "navigation": {
+    "bytes": 779
+  },
+  "payload": [
+    {
+      "id": 3,
+      "titulo": "Iluminación de una habitación",
+      "descripcion": "Estudio de luz lateral. Busco separar mejor la silla del fondo manteniendo una iluminación sencilla.",
+      "likes": 1,
+      "gustado": true,
+      "guardado": false,
+      "propio": true
+    },
+    {
+      "id": 2,
+      "titulo": "Material cerámico",
+      "descripcion": "Prueba de un material para una taza. He ajustado la rugosidad para conseguir reflejos más suaves.",
+      "likes": 0,
+      "gustado": false,
+      "guardado": false,
+      "propio": true
+    },
+    {
+      "id": 1,
+      "titulo": "Lámpara de escritorio",
+      "descripcion": "Primer ejercicio de modelado. Estoy trabajando la base y las proporciones antes de añadir materiales.",
+      "likes": 1,
+      "gustado": true,
+      "guardado": true,
+      "propio": true
+    }
+  ],
+  "jsonBytes": 655,
+  "userBytes": 57,
+  "totalPayloadBytes": 344342
+}

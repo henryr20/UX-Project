@@ -740,3 +740,15 @@ textarea {
 .mensaje-exito {
   color: var(--mensaje-exito);
 }
+
+select {
+  min-height: 44px;
+  font: inherit;
+  color: var(--text);
+  background: var(--input);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 10px 14px;
+  max-width: 100%;
+}
+.preferencias { margin-top: 22px; }

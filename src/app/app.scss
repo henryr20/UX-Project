@@ -115,7 +115,7 @@ footer {
 .theme-label {
   display: none;
 }
-@media (max-width: 640px) {
+@media (max-width: 800px) {
   .site-header {
     position: relative;
     z-index: 20;
@@ -194,7 +194,7 @@ footer {
 }
 
 @supports (backdrop-filter: blur(20px)) {
-  @media (max-width: 640px) {
+  @media (max-width: 800px) {
     .header-navigation {
       background: color-mix(in srgb, var(--panel) 80%, transparent);
       backdrop-filter: blur(24px) saturate(140%);
@@ -203,7 +203,7 @@ footer {
     }
   }
 }
-@media (max-width: 640px) {
+@media (max-width: 800px) {
   .menu-toggle pf-icon {
     width: 24px;
     height: 24px;
@@ -237,4 +237,5 @@ footer {
 main {
   display: block;
   flex: 1;
+  min-height: calc(100svh - 68px);
 }

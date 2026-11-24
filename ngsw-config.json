@@ -23,6 +23,16 @@
           "/images/*.webp"
         ]
       }
+    },
+    {
+      "name": "ayuda",
+      "installMode": "lazy",
+      "updateMode": "lazy",
+      "resources": {
+        "files": [
+          "/ayuda-web/**"
+        ]
+      }
     }
   ],
   "navigationUrls": [

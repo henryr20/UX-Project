@@ -84,6 +84,39 @@ class Api {
         return Map.of("id", u.id, "email", u.email, "verificado", u.verificado);
     }
 
+    record AprendizajeVista(Set<String> completadas, String categoria) {}
+    record Preferencia(@NotNull @Pattern(regexp="Todas|Modelado|Texturizado|Render") String categoria) {}
+    record LeccionEstado(@NotNull Boolean completada) {}
+
+    private static AprendizajeVista aprendizajeDe(Usuario usuario) {
+        return new AprendizajeVista(Set.copyOf(usuario.leccionesCompletadas),
+            usuario.categoriaPreferida == null ? "Todas" : usuario.categoriaPreferida);
+    }
+
+    @GetMapping("/aprendizaje")
+    AprendizajeVista aprendizaje(HttpServletRequest request) {
+        return aprendizajeDe(usuarioActual(request));
+    }
+
+    @PutMapping("/preferencias")
+    AprendizajeVista preferencias(@Valid @RequestBody Preferencia datos, HttpServletRequest request) {
+        var usuario = usuarios.buscarParaActualizar(usuarioActual(request).id).orElseThrow();
+        usuario.categoriaPreferida = datos.categoria();
+        return aprendizajeDe(usuario);
+    }
+
+    @PutMapping("/aprendizaje/{leccion}")
+    AprendizajeVista completarLeccion(@PathVariable String leccion,
+            @Valid @RequestBody LeccionEstado datos, HttpServletRequest request) {
+        if (!leccion.matches("(modelado|texturas|iluminacion)-[1-3]")) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+        var usuario = usuarios.buscarParaActualizar(usuarioActual(request).id).orElseThrow();
+        if (datos.completada()) usuario.leccionesCompletadas.add(leccion);
+        else usuario.leccionesCompletadas.remove(leccion);
+        return aprendizajeDe(usuario);
+    }
+
     @PutMapping("/usuarios/me")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     void editarPerfil(@Valid @RequestBody Credenciales datos, HttpServletRequest request) {

@@ -40,7 +40,7 @@ export interface Course {
         class="course-action"
         type="button"
         (click)="select.emit()"
-        [attr.aria-label]="'Continuar: ' + course().name"
+        [attr.aria-label]="'Continuar aprendiendo: ' + course().name"
       >
         Continuar aprendiendo <pf-icon name="arrow" />
       </button>

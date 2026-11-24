@@ -3,6 +3,7 @@ import { createServer as httpServer, request } from 'node:http';
 import { createServer as httpsServer } from 'node:https';
 import { extname, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { brotliCompressSync, gzipSync, constants } from 'node:zlib';
 
 const root = fileURLToPath(new URL('../dist/polyforge/browser/', import.meta.url));
 const index = resolve(root, 'index.html');
@@ -76,12 +77,25 @@ const secure = httpsServer({ key: readFileSync(key), cert: readFileSync(cert) },
     }
     file = index;
   }
+  const compressible = ['.html', '.js', '.css', '.json', '.webmanifest', '.svg'].includes(extname(file));
+  const accepted = (req.headers['accept-encoding'] ?? '').split(',').map(value => value.trim());
+  const encoding = compressible ? accepted.find(value => value === 'br' || value === 'gzip') : undefined;
+  let body;
+  if (encoding) {
+    const source = readFileSync(file);
+    body = encoding === 'br'
+      ? brotliCompressSync(source, { params: { [constants.BROTLI_PARAM_QUALITY]: 4 } })
+      : gzipSync(source);
+  }
   res.writeHead(200, {
+    ...(encoding ? { 'Content-Encoding': encoding } : {}),
+    Vary: 'Accept-Encoding',
     'Content-Type': types[extname(file)] ?? 'application/octet-stream',
     'Cache-Control': 'no-cache',
-    'Content-Length': statSync(file).size,
+    'Content-Length': body ? body.length : statSync(file).size,
   });
   if (req.method === 'HEAD') res.end();
+  else if (body) res.end(body);
   else createReadStream(file).pipe(res);
 });
 
